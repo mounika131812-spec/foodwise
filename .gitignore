@@ -16,7 +16,9 @@ frontend/node_modules/
 .playwright-mcp/
 .serena/
 demo-*.png
-*.png
+
+# Screenshots - include in git
+!screenshots/
 
 # Stale duplicate of this folder
 web - Copy/
