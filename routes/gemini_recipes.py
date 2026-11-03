@@ -14,6 +14,11 @@ from google import genai
 
 # The API key is provided by the user via GEMINI_API_KEY env var
 _API_KEY = os.environ.get('GEMINI_API_KEY')
+# Model name is overridable via GEMINI_MODEL so it can be switched in the
+# Render dashboard without a redeploy. gemini-flash-latest was hitting
+# 503 UNAVAILABLE (high demand) on the free-tier quota, so the default is
+# the lighter, less-contended flash-lite model.
+_MODEL = os.environ.get('GEMINI_MODEL', 'gemini-3.5-flash-lite')
 _client = None
 # Gemini needs longer than a few seconds for a batch of full recipes.
 _RECIPE_TIMEOUT = 14
@@ -128,7 +133,7 @@ def generate_recipes(items, count=8, uncovered=None):
     client = _get_client()
 
     def request_once(config=None):
-        kwargs = {'model': 'gemini-flash-latest', 'contents': prompt}
+        kwargs = {'model': _MODEL, 'contents': prompt}
         if config:
             kwargs['config'] = config
         resp = client.models.generate_content(**kwargs)
