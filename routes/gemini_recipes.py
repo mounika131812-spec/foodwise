@@ -21,8 +21,10 @@ _API_KEY = os.environ.get('GEMINI_API_KEY')
 _MODEL = os.environ.get('GEMINI_MODEL', 'gemini-3.5-flash-lite')
 _client = None
 # Gemini needs longer than a few seconds for a batch of full recipes.
-_RECIPE_TIMEOUT = 14
-_IMAGE_TIMEOUT = 8
+# gemini-3.5-flash-lite took ~24s for a 3-recipe batch in testing, so the
+# timeout has to leave headroom for slower prompts / more recipes.
+_RECIPE_TIMEOUT = 45
+_IMAGE_TIMEOUT = 15
 
 
 def _get_client():
