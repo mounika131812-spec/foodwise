@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FoodWise — Smart Food Waste Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+
+  <!-- ===== Animated background blobs (always behind everything) ===== -->
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+
+  <!-- ===== Auth View ===== -->
+  <div id="auth-view" class="auth-view">
+    <!-- floating food particles injected by JS -->
+    <div class="particles" id="particles"></div>
+
+    <div class="auth-wrapper">
+      <div class="auth-hero">
+        <div class="hero-emoji">🥑</div>
+        <h1 class="brand-title">FoodWise</h1>
+        <p class="brand-tag">Save food. Save money. Save the planet. 🌍</p>
+        <ul class="hero-points">
+          <li><span class="point-icon">📦</span> Track your pantry & expiry dates</li>
+          <li><span class="point-icon">🍳</span> Recipes to rescue soon-to-spoil food</li>
+          <li><span class="point-icon">📊</span> Analytics on what you waste &amp; why</li>
+        </ul>
+      </div>
+
+      <div class="auth-container">
+        <div class="auth-card-ring" aria-hidden="true"></div>
+
+        <div class="auth-header">
+          <div class="auth-logo">🌿</div>
+          <span class="auth-badge">Smart Food Waste Management</span>
+          <h2 id="auth-title">Welcome back</h2>
+          <p id="auth-sub">Sign in to keep wasting less</p>
+        </div>
+
+        <div class="auth-toggle">
+          <button class="toggle-btn active" data-tab="login">Login</button>
+          <button class="toggle-btn" data-tab="register">Register</button>
+          <div class="toggle-pill"></div>
+        </div>
+
+        <!-- Login Form -->
+        <form id="login-form" class="auth-form">
+          <div class="form-group">
+            <label>Email</label>
+            <div class="input-wrap"><span class="input-icon">✉️</span>
+              <input type="email" name="email" required placeholder="your@email.com" autocomplete="email">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrap has-toggle"><span class="input-icon">🔒</span>
+              <input type="password" name="password" required placeholder="••••••••" autocomplete="current-password">
+              <button type="button" class="pw-toggle" aria-label="Show password">👁️</button>
+            </div>
+          </div>
+          <div id="login-error" class="error-msg"></div>
+          <button type="submit" class="btn btn-primary btn-full btn-glow">Login <span class="btn-arrow">→</span></button>
+          <p class="auth-foot">New to FoodWise? <a href="#" data-tab-link="register">Create an account</a></p>
+        </form>
+
+        <!-- Register Form -->
+        <form id="register-form" class="auth-form hidden">
+          <div class="form-group">
+            <label>Full Name</label>
+            <div class="input-wrap"><span class="input-icon">👤</span>
+              <input type="text" name="name" required placeholder="Jane Doe">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <div class="input-wrap"><span class="input-icon">✉️</span>
+              <input type="email" name="email" required placeholder="your@email.com" autocomplete="email">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <div class="input-wrap has-toggle"><span class="input-icon">🔒</span>
+              <input type="password" name="password" required minlength="6" placeholder="Min 6 characters" autocomplete="new-password">
+              <button type="button" class="pw-toggle" aria-label="Show password">👁️</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>I am a…</label>
+            <div class="input-wrap"><span class="input-icon">🏷️</span>
+              <select name="role">
+                <option value="household">🏠 Household</option>
+                <option value="restaurant">🍽️ Restaurant</option>
+                <option value="admin">🛠️ Admin</option>
+              </select>
+            </div>
+          </div>
+          <div id="register-error" class="error-msg"></div>
+          <button type="submit" class="btn btn-primary btn-full btn-glow">Create Account <span class="btn-arrow">→</span></button>
+          <p class="auth-foot">Already have an account? <a href="#" data-tab-link="login">Sign in</a></p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Main App ===== -->
+  <div id="app-view" class="hidden">
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="nav-brand"><span class="brand-leaf">🌿</span> Food<span class="brand-accent">Wise</span></div>
+      <button class="nav-toggle" id="nav-toggle">☰</button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#" data-view="dashboard" class="active"><span class="nav-ico">🏠</span>Dashboard</a></li>
+        <li><a href="#" data-view="pantry"><span class="nav-ico">🧺</span>Pantry</a></li>
+        <li><a href="#" data-view="waste"><span class="nav-ico">🗑️</span>Waste Log</a></li>
+        <li><a href="#" data-view="recipes"><span class="nav-ico">🍳</span>Recipes</a></li>
+        <li><a href="#" data-view="analytics"><span class="nav-ico">📊</span>Analytics</a></li>
+      </ul>
+      <div class="nav-user">
+        <div class="user-chip">
+          <div class="avatar" id="avatar-initials">👤</div>
+          <span id="user-name" class="user-name"></span>
+        </div>
+        <button id="logout-btn" class="btn btn-ghost btn-small">Logout</button>
+      </div>
+    </nav>
+
+    <!-- Dashboard -->
+    <section id="dashboard-view" class="view">
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Dashboard</h2>
+          <p class="view-sub" id="greeting">Here's what's happening in your kitchen</p>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card tilt" style="--card-hue: rgba(45,106,79,.12); --card-accent:#2d6a4f">
+          <div class="stat-icon">📦</div>
+          <div class="stat-value" id="stat-total" data-count="0">0</div>
+          <div class="stat-label">Total Items</div>
+          <div class="stat-glow"></div>
+        </div>
+        <div class="stat-card tilt" style="--card-hue: rgba(82,183,136,.15); --card-accent:#52b788">
+          <div class="stat-icon">🥬</div>
+          <div class="stat-value" id="stat-fresh" data-count="0">0</div>
+          <div class="stat-label">Fresh Items</div>
+          <div class="stat-glow"></div>
+        </div>
+        <div class="stat-card stat-warning tilt" style="--card-hue: rgba(244,162,97,.16); --card-accent:#f4a261">
+          <div class="stat-icon">⏰</div>
+          <div class="stat-value" id="stat-expiring" data-count="0">0</div>
+          <div class="stat-label">Expiring Soon</div>
+          <div class="stat-glow"></div>
+        </div>
+        <div class="stat-card stat-danger tilt" style="--card-hue: rgba(230,57,70,.12); --card-accent:#e63946">
+          <div class="stat-icon">🗑️</div>
+          <div class="stat-value" id="stat-wasted" data-count="0">0</div>
+          <div class="stat-label">Total Wasted</div>
+          <div class="stat-glow"></div>
+        </div>
+      </div>
+
+      <div class="alert-banner hidden" id="expiry-alert">
+        <span class="alert-ico">⚠️</span>
+        <span id="expiry-alert-text"></span>
+        <button class="btn btn-small btn-secondary" onclick="navigateTo('pantry')">Check pantry →</button>
+      </div>
+
+      <div class="recent-section">
+        <h3>Recent Waste <span class="section-hint">last 5 entries</span></h3>
+        <div id="recent-waste-list" class="recent-list">
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+          <div class="skeleton-row"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pantry -->
+    <section id="pantry-view" class="view hidden">
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Pantry</h2>
+          <p class="view-sub">What's in your kitchen right now</p>
+        </div>
+        <button class="btn btn-primary btn-glow" id="add-food-btn"><span class="btn-plus">＋</span> Add Food</button>
+      </div>
+      <div class="filters">
+        <select id="filter-category">
+          <option value="">🏷️ All Categories</option>
+          <option value="fruits">🍎 Fruits</option>
+          <option value="vegetables">🥕 Vegetables</option>
+          <option value="dairy">🥛 Dairy</option>
+          <option value="meat">🍗 Meat</option>
+          <option value="grains">🌾 Grains</option>
+          <option value="beverages">🧃 Beverages</option>
+          <option value="snacks">🍿 Snacks</option>
+          <option value="other">🧺 Other</option>
+        </select>
+        <select id="filter-status">
+          <option value="">📋 All Status</option>
+          <option value="fresh">🟢 Fresh</option>
+          <option value="expiring">🟠 Expiring Soon</option>
+          <option value="expired">🔴 Expired</option>
+          <option value="wasted">⚫ Wasted</option>
+        </select>
+      </div>
+      <div id="food-list" class="food-list">
+        <div class="skeleton-row tall"></div>
+        <div class="skeleton-row tall"></div>
+      </div>
+    </section>
+
+    <!-- Waste Log -->
+    <section id="waste-view" class="view hidden">
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Waste Log</h2>
+          <p class="view-sub">Every gram tracked is a gram you can prevent</p>
+        </div>
+        <button class="btn btn-danger-soft" id="log-waste-btn"><span class="btn-plus">＋</span> Log Waste</button>
+      </div>
+      <div id="waste-list" class="waste-list">
+        <div class="skeleton-row"></div>
+        <div class="skeleton-row"></div>
+      </div>
+    </section>
+
+    <!-- Recipes -->
+    <section id="recipes-view" class="view hidden">
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">AI Recipes</h2>
+          <p class="view-sub">Generate recipes from expiring ingredients</p>
+        </div>
+        <button class="btn btn-primary btn-glow" id="ai-generate-btn"><span class="btn-plus">🤖</span> AI Generate</button>
+        <button class="btn btn-ghost btn-small" id="add-recipe-btn" style="display:none;"><span class="btn-plus">＋</span> Add Recipe</button>
+      </div>
+      <div id="recipe-list" class="recipe-list"></div>
+    </section>
+
+    <!-- Analytics -->
+    <section id="analytics-view" class="view hidden">
+      <div class="view-header">
+        <div>
+          <h2 class="view-title">Analytics</h2>
+          <p class="view-sub">Where is your food going? 👀</p>
+        </div>
+      </div>
+      <!-- Bento analytics: four live cards, rendered by loadAnalytics() in app.js -->
+      <div class="ab-root" id="analytics-bento" aria-busy="true">
+        <div class="ab-grid">
+          <div class="ab-card ab-sk" style="grid-column:span 5"><div class="skeleton-row tall"></div><div class="skeleton-row tall"></div></div>
+          <div class="ab-card ab-sk" style="grid-column:span 7"><div class="skeleton-row tall"></div><div class="skeleton-row tall"></div></div>
+          <div class="ab-card ab-sk" style="grid-column:span 7"><div class="skeleton-row tall"></div><div class="skeleton-row tall"></div><div class="skeleton-row tall"></div></div>
+          <div class="ab-card ab-sk" style="grid-column:span 5"><div class="skeleton-row tall"></div><div class="skeleton-row tall"></div></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ===== Food Modal ===== -->
+  <div id="food-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="food-modal-title">Add Food Item</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="food-form">
+        <input type="hidden" name="id">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Name *</label>
+            <input type="text" name="name" required placeholder="e.g., Tomatoes">
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <select name="category" required>
+              <option value="fruits">🍎 Fruits</option>
+              <option value="vegetables">🥕 Vegetables</option>
+              <option value="dairy">🥛 Dairy</option>
+              <option value="meat">🍗 Meat</option>
+              <option value="grains">🌾 Grains</option>
+              <option value="beverages">🧃 Beverages</option>
+              <option value="snacks">🍿 Snacks</option>
+              <option value="other">🧺 Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Quantity *</label>
+            <input type="number" name="quantity" step="0.1" min="0.1" required placeholder="2.5">
+          </div>
+          <div class="form-group">
+            <label>Unit *</label>
+            <select name="unit" required>
+              <option value="kg">kg</option>
+              <option value="g">g</option>
+              <option value="L">Liters</option>
+              <option value="ml">ml</option>
+              <option value="pieces">Pieces</option>
+              <option value="bunches">Bunches</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Purchase Date *</label>
+            <input type="date" name="purchase_date" required>
+          </div>
+          <div class="form-group">
+            <label>Expiry Date *</label>
+            <input type="date" name="expiry_date" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <div class="seg-group">
+            <button type="button" class="seg-btn active" data-location="fridge">🧊 Fridge</button>
+            <button type="button" class="seg-btn" data-location="freezer">❄️ Freezer</button>
+            <button type="button" class="seg-btn" data-location="pantry">🗄️ Pantry</button>
+          </div>
+          <input type="hidden" name="location" value="fridge">
+        </div>
+        <div class="form-group">
+          <label>Notes</label>
+          <input type="text" name="notes" placeholder="Optional notes...">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost modal-close">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-glow">Save Item</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Waste Modal ===== -->
+  <div id="waste-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Log Waste</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="waste-form">
+        <div class="form-group">
+          <label>Select Food Item <span class="label-hint">(or enter manually below)</span></label>
+          <select name="food_item_id">
+            <option value="">-- Enter Manually --</option>
+          </select>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Name *</label>
+            <input type="text" name="name" required>
+          </div>
+          <div class="form-group">
+            <label>Category *</label>
+            <select name="category" required>
+              <option value="fruits">🍎 Fruits</option>
+              <option value="vegetables">🥕 Vegetables</option>
+              <option value="dairy">🥛 Dairy</option>
+              <option value="meat">🍗 Meat</option>
+              <option value="grains">🌾 Grains</option>
+              <option value="beverages">🧃 Beverages</option>
+              <option value="snacks">🍿 Snacks</option>
+              <option value="other">🧺 Other</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Quantity *</label>
+            <input type="number" name="quantity" step="0.1" min="0.1" required placeholder="1.5">
+          </div>
+          <div class="form-group">
+            <label>Unit *</label>
+            <select name="unit" required>
+              <option value="kg">kg</option>
+              <option value="g">g</option>
+              <option value="L">Liters</option>
+              <option value="ml">ml</option>
+              <option value="pieces">Pieces</option>
+              <option value="bunches">Bunches</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Reason</label>
+          <select name="reason">
+            <option value="expired">⌛ Expired</option>
+            <option value="spoiled">🦠 Spoiled</option>
+            <option value="overcooked">🔥 Overcooked</option>
+            <option value="leftovers">🍽️ Leftovers</option>
+            <option value="other">🤷 Other</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost modal-close">Cancel</button>
+          <button type="submit" class="btn btn-danger">Log Waste</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Recipe Modal ===== -->
+  <div id="recipe-modal" class="modal hidden">
+    <div class="modal-content modal-large">
+      <div class="modal-header">
+        <h3>Add Recipe</h3>
+        <button class="modal-close">&times;</button>
+      </div>
+      <form id="recipe-form">
+        <div class="form-group">
+          <label>Recipe Title *</label>
+          <input type="text" name="title" required placeholder="e.g., Banana Bread">
+        </div>
+        <div class="form-group">
+          <label>Ingredients * <span class="label-hint">(comma-separated)</span></label>
+          <input type="text" name="ingredients" required placeholder="2 bananas, 1 cup flour, 1 egg">
+        </div>
+        <div class="form-group">
+          <label>Instructions *</label>
+          <textarea name="instructions" required rows="5" placeholder="Step by step instructions..."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Prep Time (minutes)</label>
+          <input type="number" name="prep_time" min="1" placeholder="30">
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost modal-close">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-glow">Save Recipe</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"><span class="toast-ico"></span><span class="toast-msg"></span></div>
+
+  <script src="/static/js/bento.js"></script>
+  <script src="/static/js/app.js"></script>
+</body>
+</html>

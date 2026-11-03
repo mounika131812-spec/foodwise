@@ -1,0 +1,13 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "description": "A full-stack web application for tracking household/restaurant food inventory, logging waste, managing recipes, and analyzing food waste patterns — built as a college internship project.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

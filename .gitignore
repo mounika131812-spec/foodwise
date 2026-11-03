@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Node / build tooling (not part of the shipped app)
+node_modules/
+frontend/node_modules/
+
+# Tooling and local artifacts
+.claude/
+.mcp.json
+.playwright-mcp/
+.serena/
+demo-*.png
+*.png
+
+# Stale duplicate of this folder
+web - Copy/
+
+# Database files
+foodwise.db

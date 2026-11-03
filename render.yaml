@@ -1,0 +1,28 @@
+# Render blueprint — deploy FoodWise with one click.
+# https://docs.render.com/blueprints/
+#
+# Connect this repo to Render and it will build & run automatically.
+# The web service runs gunicorn (production WSGI server) with a generous
+# timeout because the AI recipe endpoint waits on the Gemini API.
+#
+# Data note: the app uses SQLite (data/foodwaste.db). Render's free tier has
+# an ephemeral filesystem, so the database resets on every deploy/restart.
+# That is fine for a demo; if you need persistence later, move to Render's
+# paid persistent disk or swap the DDL for Postgres.
+
+services:
+  - type: web
+    name: foodwise
+    region: oregon
+    plan: free
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn -w 1 --threads 8 --timeout 120 app:app
+    envVars:
+      - key: GEMINI_API_KEY
+        # Add your Gemini key in the Render dashboard → Environment.
+        # Leave empty and the AI Generate button falls back to templates.
+        value: ""
+    # Free-tier instances sleep after 15 min idle. Keep warm with a free
+    # UptimeRobot monitor pinging the service URL every 5 min.
+    healthCheckPath: /
